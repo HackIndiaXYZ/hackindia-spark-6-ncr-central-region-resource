@@ -145,7 +145,85 @@ html,body{height:100%;width:100%;margin:0;padding:0;background:var(--bg);color:v
 
 /* ── Responsive ── */
 @media(max-width:900px){.right-rail{display:none}}
-@media(max-width:680px){.left-rail{width:80px}.nav-item span{display:none}.nav-logo-text{display:none}}
+@media(max-width:680px){
+  .left-rail{display:none !important}
+  .app-shell{flex-direction:column}
+  .center-col{padding-bottom:72px}
+  
+  /* ── Mobile Bottom Nav ── */
+  .mobile-bottom-nav{display:flex !important;position:fixed;bottom:0;left:0;right:0;height:64px;background:var(--surface);border-top:1px solid var(--border);z-index:200;align-items:stretch;justify-content:space-around;padding:0 4px;box-shadow:0 -4px 20px rgba(0,0,0,0.06)}
+  .mobile-nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:1;border:none;background:transparent;cursor:pointer;color:var(--text3);font-size:10px;font-weight:600;padding:6px 2px;position:relative;transition:color .2s}
+  .mobile-nav-btn.active{color:var(--teal)}
+  .mobile-nav-btn.active::before{content:'';position:absolute;top:0;left:25%;right:25%;height:3px;background:var(--teal);border-radius:0 0 4px 4px}
+  .mobile-nav-btn svg{width:20px;height:20px}
+  
+  /* ── Mobile Menu Overlay ── */
+  .mobile-menu-overlay{position:fixed;inset:0;background:rgba(15,23,42,0.5);backdrop-filter:blur(6px);z-index:250;animation:fadeIn .2s ease}
+  .mobile-menu-drawer{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-radius:24px 24px 0 0;z-index:260;padding:16px 16px 32px;max-height:75vh;overflow-y:auto;animation:slideUp .35s cubic-bezier(0.16,1,0.3,1);box-shadow:0 -10px 40px rgba(0,0,0,0.15)}
+  .mobile-menu-handle{width:40px;height:4px;background:var(--border2);border-radius:4px;margin:0 auto 16px}
+  .mobile-menu-drawer .nav-item{border-radius:14px;margin-bottom:2px}
+  .mobile-menu-drawer .nav-item span{display:inline !important}
+  
+  @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  
+  /* ── Cards & Post ── */
+  .post-card{border-radius:18px;padding:16px;margin-bottom:8px !important}
+  .composer{border-radius:0 0 18px 18px;padding:16px}
+  .ai-card{padding:18px 16px;border-radius:18px}
+  
+  /* ── Modal ── */
+  .overlay{padding:10px;align-items:flex-end}
+  .modal-box{border-radius:24px 24px 8px 8px;max-height:85vh}
+  
+  /* ── Login ── */
+  .login-card{padding:32px 24px;border-radius:24px;max-width:100%}
+  
+  /* ── AI Page ── */
+  .ai-page{padding:0 12px 80px}
+  
+  /* ── Profile ── */
+  .profile-cover{height:130px}
+  
+  /* ── Forms ── */
+  .edit-profile-form{padding:20px 18px}
+  .slot-btn{padding:12px 16px;border-radius:14px}
+  
+  /* ── Dashboard ── */
+  .dash-table{font-size:12px}
+  .dash-table th,.dash-table td{padding:10px 10px}
+  
+  /* ── Symptom input ── */
+  .symptom-input-row{flex-direction:column;gap:8px}
+  .symptom-input-row .btn-p{width:100%}
+  
+  /* ── Account cards ── */
+  .account-row{flex-direction:column;gap:8px}
+  .account-row-icon{width:32px;height:32px;border-radius:8px}
+  
+  /* ── Doc banner ── */
+  .doc-banner{padding:12px 14px;border-radius:16px;gap:10px}
+  
+  /* ── Trend card ── */
+  .trend-card{padding:12px;border-radius:14px}
+  
+  /* ── Hide desktop-only ── */
+  .nav-logo-text{display:none}
+}
+
+/* ── Tablet tweaks ── */
+@media(min-width:681px) and (max-width:900px){
+  .left-rail{width:80px}
+  .nav-item span{display:none}
+  .nav-logo-text{display:none}
+}
+
+/* ── Hide mobile nav on desktop ── */
+.mobile-bottom-nav{display:none}
+.mobile-menu-overlay{display:none}
+.mobile-menu-drawer{display:none}
+@media(max-width:680px){
+  .mobile-bottom-nav{display:flex !important}
+}
 
 /* ── Doctor only banner ── */
 .doc-banner{background:linear-gradient(135deg,rgba(59,130,246,0.06),rgba(99,102,241,0.04));border:1px solid rgba(59,130,246,0.15);border-radius:24px;padding:18px 24px;display:flex;align-items:center;gap:16px}
@@ -821,6 +899,79 @@ const LeftSidebar = ({activePage, setPage}) => {
         </button>
       </div>
     </div>
+  );
+};
+
+/* ════════════════════════════════════════════════════════════════
+   MOBILE BOTTOM NAV
+════════════════════════════════════════════════════════════════ */
+const MobileBottomNav = ({activePage, setPage}) => {
+  const {user, logout, theme, toggleTheme} = useApp();
+  const [showMore, setShowMore] = useState(false);
+  const isDoc = user?.role==="doctor";
+
+  const primaryNav = [
+    {id:"feed", label:"Home", icon:IC.home},
+    {id:"search", label:"Search", icon:IC.search},
+    ...(isDoc ? [{id:"doctors", label:"Doctors", icon:IC.steth}] : [{id:"consult", label:"AI", icon:IC.brain}]),
+    {id:"profile", label:"Profile", icon:IC.user},
+  ];
+
+  const moreItems = [
+    ...(isDoc ? [] : [{id:"doctors", label:"Doctors Only", icon:IC.steth}]),
+    {id:"outbreak", label:"Outbreak Map", icon:IC.mapPin},
+    ...(isDoc ? [] : [{id:"tests", label:"Book Tests", icon:IC.calendar}]),
+    ...(isDoc ? [{id:"dashboard", label:"Dashboard", icon:IC.clipboard}] : []),
+    {id:"trends", label:"Health Trends", icon:IC.trend},
+  ];
+
+  return (
+    <>
+      <div className="mobile-bottom-nav">
+        {primaryNav.map(item=>(
+          <button key={item.id} className={`mobile-nav-btn ${activePage===item.id?"active":""}`}
+            onClick={()=>{setPage(item.id);setShowMore(false);}}>
+            {item.icon}
+            <span>{item.label}</span>
+          </button>
+        ))}
+        <button className={`mobile-nav-btn ${showMore?"active":""}`}
+          onClick={()=>setShowMore(!showMore)}>
+          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.9" viewBox="0 0 24 24">
+            <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+          </svg>
+          <span>More</span>
+        </button>
+      </div>
+      {showMore && (
+        <>
+          <div className="mobile-menu-overlay" onClick={()=>setShowMore(false)}/>
+          <div className="mobile-menu-drawer">
+            <div className="mobile-menu-handle"/>
+            {moreItems.map(item=>(
+              <button key={item.id} className={`nav-item ${activePage===item.id?"active":""}`}
+                onClick={()=>{setPage(item.id);setShowMore(false);}}>
+                <span style={{flexShrink:0}}>{item.icon}</span>
+                <span>{item.label}</span>
+              </button>
+            ))}
+            <div style={{borderTop:"1px solid var(--border)",margin:"10px 0",padding:"10px 0"}}>
+              <button className="theme-toggle" onClick={toggleTheme} style={{marginBottom:8}}>
+                {theme==="dark" ? (
+                  <><svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg><span>Light Mode</span></>
+                ) : (
+                  <><svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span>Dark Mode</span></>
+                )}
+              </button>
+              <button className="nav-item" onClick={()=>{logout();setShowMore(false);}} style={{color:"#ef4444",borderRadius:12}}>
+                <span style={{flexShrink:0}}>{IC.logout}</span>
+                <span>Log Out</span>
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 };
 
@@ -2915,6 +3066,10 @@ export default function App() {
         </div>
         <RightSidebar onHashtagClick={goHashtag}/>
       </div>
+      <MobileBottomNav activePage={page} setPage={p=>{
+        if(p==="profile"){setProfileId(authUser.id);}
+        setPage(p);
+      }}/>
       {appointmentDoc && <AppointmentModal doctor={appointmentDoc} onClose={()=>setAppointmentDoc(null)}/>}
     </AppCtx.Provider>
   );
