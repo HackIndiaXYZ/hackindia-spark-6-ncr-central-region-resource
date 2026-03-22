@@ -29,9 +29,9 @@ High costs often prevent people from seeking professional medical advice. Instea
    git clone [https://github.com/s5zy77/svasthyaproto.git](https://github.com/s5zy77/svasthyaproto.git)
 
 2. **Install dependencies**
-   '''bash
+   ```bash
    npm install
 
 3. **Run the development server**
-   '''bash
+   ```bash
    npm run dev
